@@ -6,7 +6,7 @@ Coding the Curbs is een start-up die sinds januari 2020 werkt aan het slimmer ma
 
 ## Resources
 
-[Project board](https://github.com/fdnd-agency/coding-the-curbs/projects/2)
+[Project board](https://github.com/orgs/fdnd-agency/projects/10)
 
 [Styleguide]()
 
