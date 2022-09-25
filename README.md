@@ -10,4 +10,4 @@ Coding the Curbs is een start-up die sinds januari 2020 werkt aan het slimmer ma
 
 [Styleguide](https://drive.google.com/file/d/1MxCIeJQF-YWejEC1b2s9jkcYF6pZUx0m/view?usp=sharing)
 
-[Content]()  
+[Content](https://github.com/fdnd-agency/coding-the-curbs/blob/main/smart-zones.json)  
