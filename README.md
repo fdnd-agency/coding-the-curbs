@@ -8,8 +8,12 @@ Coding the Curbs is een start-up die sinds januari 2020 werkt aan het slimmer ma
 
 [Project board](https://github.com/orgs/fdnd-agency/projects/10)
 
-[Styleguide](https://drive.google.com/file/d/1MxCIeJQF-YWejEC1b2s9jkcYF6pZUx0m/view?usp=sharing)
+[REST API Coding the Curbs](api.codingthecurbs.fdnd.nl)
+
+[Living Styleguide]()
+
+[Huisstijl](https://drive.google.com/file/d/1MxCIeJQF-YWejEC1b2s9jkcYF6pZUx0m/view?usp=sharing)
 
 [Content](https://github.com/fdnd-agency/coding-the-curbs/blob/main/smart-zones.json)
 
-[Website van CTC](https://www.codingthecurbs.com/?lang=nl)
+[Website van Coding the Curbs](https://www.codingthecurbs.com/)
