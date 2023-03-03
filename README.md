@@ -10,7 +10,7 @@ Coding the Curbs is een start-up die sinds januari 2020 werkt aan het slimmer ma
 
 [REST API Coding the Curbs](https://api.codingthecurbs.fdnd.nl)
 
-[Living Styleguide]()
+[Living Styleguide]
 
 [Huisstijl](https://drive.google.com/file/d/1MxCIeJQF-YWejEC1b2s9jkcYF6pZUx0m/view?usp=sharing)
 
