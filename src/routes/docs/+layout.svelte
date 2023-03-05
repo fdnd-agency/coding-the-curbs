@@ -2,7 +2,7 @@
 	import { Documentation, Nav } from '@fdnd/components';
 
 	const data = {
-		Method: {
+		Smartzone: {
 			// GET: '/docs/method#get',
 			// '[slug]': '/docs/method#slug'
 			// POST: '/docs/method#post',
@@ -10,7 +10,7 @@
 			// PATCH: '/docs/method#patch',
 			// DELETE: '/docs/method#delete',
 		},
-		Methods: {
+		Smartzones: {
 			// GET: '/docs/methods#get'
 		},
 		
