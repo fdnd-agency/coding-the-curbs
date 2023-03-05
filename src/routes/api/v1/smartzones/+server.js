@@ -22,6 +22,9 @@ export async function GET({ url }) {
         description {
           html
         }
+        image {
+          url
+        }
         town
         address
         country
@@ -31,6 +34,14 @@ export async function GET({ url }) {
         }
         size
         utilization
+        reservation {
+          dateStart
+          dateStop
+          timeStart
+          timeStop
+          recurrence
+          weekday
+        }
       }
       smartzonesConnection {
         pageInfo {
