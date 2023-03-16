@@ -16,7 +16,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@fdnd/components": "^0.0.11",
+		"@fdnd/components": "^0.0.12",
 		"graphql": "^16.6.0",
 		"graphql-request": "^5.1.0"
 	}

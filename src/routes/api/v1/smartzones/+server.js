@@ -18,6 +18,7 @@ export async function GET({ url }) {
   const query = gql`
     query getSmartzones($first: Int, $skip: Int, $orderBy: SmartzoneOrderByInput) {
       smartzones(first: $first, skip: $skip, orderBy: $orderBy) {
+        id
         name
         description {
           html
