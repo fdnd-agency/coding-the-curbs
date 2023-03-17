@@ -2,6 +2,10 @@
 	import { Documentation} from '@fdnd/components';
 
 	const data = {
+		Reservations: {
+			GET: '/docs/reservations#get',
+			POST: '/docs/reservations#post'
+		},
 		Smartzone: {
 			GET: '/docs/smartzone/#get',
 			'[slug]': '/docs/smartzone/#slug'

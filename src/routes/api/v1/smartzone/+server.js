@@ -13,6 +13,7 @@ export async function GET({ url }) {
 	const query = gql`
     query getSmartzone($id: ID){
         smartzone(where: {id: $id}) {
+          id
           name
           description {
             html
