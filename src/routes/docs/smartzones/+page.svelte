@@ -5,7 +5,7 @@
 <p>
 	Een gepagineerd overzicht van alle <em>smartzones</em> met een aantal in te stellen
 	opties welke als url parameter meegestuurd kunnen worden. Standaard worden de laatst toegevoegde
-	tien <em>smartzones</em> ingeladen maar dit aantal, het aantal <em>mesmartzonesmbers</em> dat geskipt worden, de
+	tien <em>smartzones</em> ingeladen maar dit aantal, het aantal <em>smartzones</em> dat geskipt worden, de
 	volgorde en de kolom waarop gesorteerd wordt kunnen worden ingesteld.
 </p>
 
