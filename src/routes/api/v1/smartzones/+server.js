@@ -35,11 +35,11 @@ export async function GET({ url }) {
         }
         size
         utilization
-        reservation {
+        reservations {
           dateStart
-          dateStop
+          dateEnd
           timeStart
-          timeStop
+          timeEnd
           recurrence
           weekday
         }
