@@ -1,58 +1,56 @@
-import { GraphQLClient, gql } from 'graphql-request'
-import { HYGRAPH_KEY, HYGRAPH_URL_HIGH_PERFORMANCE } from '$env/static/private'
-
+import { gql } from 'graphql-request'
+import { hygraphOnSteroids } from '$lib/server/hygraph'
 import { responseInit } from '$lib/server/responseInit'
 
-const hygraph = new GraphQLClient(HYGRAPH_URL_HIGH_PERFORMANCE, {
-  headers: {
-    Authorization: `Bearer ${HYGRAPH_KEY}`,
-  },
-})
-
 export async function GET({ url }) {
-  let first = Number(url.searchParams.get('first') ?? 5)
-  let skip = Number(url.searchParams.get('skip') ?? 0)
-  let direction = url.searchParams.get('direction') === 'ASC' ? 'ASC' : 'DESC'
-  let orderBy = (url.searchParams.get('orderBy') ?? 'publishedAt') + '_' + direction
+  const first = Number(url.searchParams.get('first') ?? 5)
+  const skip = Number(url.searchParams.get('skip') ?? 0)
+  const direction = url.searchParams.get('direction') === 'ASC' ? 'ASC' : 'DESC'
+  const orderBy = (url.searchParams.get('orderBy') ?? 'publishedAt') + '_' + direction
 
-  const query = gql`
-    query getSmartzones($first: Int, $skip: Int, $orderBy: SmartzoneOrderByInput) {
-      smartzones(first: $first, skip: $skip, orderBy: $orderBy) {
-        id
-        name
-        description {
-          html
-        }
-        image {
-          url
-        }
-        town
-        address
-        country
-        geolocation {
-          latitude
-          longitude
-        }
-        size
-        utilization
-        reservations {
-          dateStart
-          dateEnd
-          timeStart
-          timeEnd
-          recurrence
-          weekday
-        }
+  const query = queryGetSmartzones()
+  const data = await hygraphOnSteroids.request(query, { first, skip, orderBy })
+  return new Response(JSON.stringify(data), responseInit)
+}
+
+function queryGetSmartzones () {
+  return gql`
+  query getSmartzones($first: Int, $skip: Int, $orderBy: SmartzoneOrderByInput) {
+    smartzones(first: $first, skip: $skip, orderBy: $orderBy) {
+      id
+      slug
+      name
+      description {
+        html
       }
-      smartzonesConnection {
-        pageInfo {
-          hasNextPage
-          hasPreviousPage
-          pageSize
-        }
+      image {
+        url
+      }
+      town
+      address
+      country
+      geolocation {
+        latitude
+        longitude
+      }
+      size
+      utilization
+      reservations {
+        dateStart
+        dateEnd
+        timeStart
+        timeEnd
+        recurrence
+        weekday
       }
     }
-  `
-  const data = await hygraph.request(query, { first, skip, orderBy })
-  return new Response(JSON.stringify(data), responseInit)
+    smartzonesConnection {
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        pageSize
+      }
+    }
+  }
+`
 }

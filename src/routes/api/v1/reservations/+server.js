@@ -1,11 +1,22 @@
 import { gql } from 'graphql-request'
-import { hygraph } from '$lib/server/hygraph'
+import { hygraph, hygraphOnSteroids } from '$lib/server/hygraph'
 import { responseInit } from '$lib/server/responseInit'
+import { validateField, handleErrors } from '$lib/helpers/errorHandling'
 
+// todo: save errors in store
+const errors = []
+
+// Get Reservations
 export async function GET({ url }) {
-  let id = url.searchParams.get('id') ?? ''
+  const id = url.searchParams.get('id') ?? ''
+  const query = reservationsQuery()
+  const data = await hygraphOnSteroids.request(query, { id })
+  
+  return new Response(JSON.stringify(data), responseInit)
+}
 
-  const query = gql`
+function reservationsQuery () {
+  return gql`
     query getReservations($id: ID!) {
       reservations(where: { smartzone: { id: $id } }) {
         id
@@ -14,104 +25,79 @@ export async function GET({ url }) {
         dateEnd
         timeStart
         timeEnd
-        recurrence
-        weekday
         smartzone {
           id
         }
       }
     }
   `
-
-  const data = await hygraph.request(query, { id })
-  return new Response(JSON.stringify(data), responseInit)
 }
 
+// Insert Reservation
 export async function POST({ request }) {
   const requestData = await request.json()
-  let errors = []
+  const mutation = prepareMutation()
+  const publication = preparePublication()
 
-  // Controleer de request data op juistheid
-  if (!requestData.author || typeof requestData.author !== 'string') {
-    errors.push({ field: 'author', message: 'author should exist and have a string value' })
-  }
-  if (!requestData.dateStart || typeof requestData.dateStart !== 'string') {
-    errors.push({ field: 'dateStart', message: 'dateStart should exist and have a string value' })
-  }
-  if (!requestData.dateEnd || typeof requestData.dateEnd !== 'string') {
-    errors.push({ field: 'dateEnd', message: 'dateEnd should exist and have a string value' })
-  }
-  if (!requestData.timeStart || typeof requestData.timeStart !== 'string') {
-    errors.push({ field: 'timeStart', message: 'timeStart should exist and have a string value' })
-  }
-  if (!requestData.timeEnd || typeof requestData.timeEnd !== 'string') {
-    errors.push({ field: 'timeEnd', message: 'timeEnd should exist and have a string value' })
-  }
-  if (!requestData.smartzoneId) {
-    errors.push({ field: 'smartzoneId', message: 'smartzoneId should exist' })
-  }
+  const fields = [
+    { name: 'author', type: 'string' },
+    { name: 'dateStart', type: 'string' },
+    { name: 'dateEnd', type: 'string' },
+    { name: 'timeStart', type: 'string' },
+    { name: 'timeEnd', type: 'string' },
+    { name: 'smartzoneId', type: 'string' }
+  ]
+  
+  fields.forEach(field => { validateField(requestData, field.name, field.type, errors) })
 
+  if (errors.length > 0) return handleErrors(errors)
 
-  // Als we hier al errors hebben in de form data sturen we die terug
-  if (errors.length > 0) {
-    return new Response(
-      JSON.stringify({
-        method: 'POST',
-        working: 'yes',
-        succes: false,
-        errors: errors,
-      })
-    )
-
-    // Geen errors, voeg de reservation toe
-  } else {
-    // Bereid de mutatie voor
-    const mutation = gql`
-      mutation createReservation($author: String!, $dateStart: Date!, $dateEnd: Date!, $timeStart: DateTime!, $timeEnd: DateTime!, $smartzoneId: ID!) {
-        createReservation(data: { author: $author, dateStart: $dateStart, dateEnd: $dateEnd, timeStart: $timeStart, timeEnd: $timeEnd, smartzone: { connect: { id: $smartzoneId } } }) {
-          id
-        }
-      }
-    `
-    // Bereid publiceren voor
-    const publication = gql`
-      mutation publishReservation($id: ID!) {
-        publishReservation(where: { id: $id }, to: PUBLISHED) {
-          id
-        }
-      }
-    `
-
-    // Voer de mutatie uit
-    const data = await hygraph
-      .request(mutation, { ...requestData })
-      // Stuur de response met created id door
-      .then((data) => {
-        console.log(data)
-        return (
-          hygraph
-            // Voer de publicatie uit met created id
-            .request(publication, { id: data.createReservation.id ?? null })
-            // Vang fouten af bij het publiceren
-            .catch((error) => {
-              errors.push({ field: 'HyGraph', message: error })
-            })
-        )
-      })
-      // Vang fouten af bij de mutatie
-      .catch((error) => {
-        errors.push({ field: 'HyGraph', message: error })
-      })
-
-    return new Response(
-      JSON.stringify({
-        method: 'POST',
-        working: 'yes',
-        success: data && data.publishReservation ? true : false,
-        data: data && data.publishReservation,
-        errors: errors,
-      }),
-      responseInit
-    )
-  }
+  const responseData = await insertReservation(requestData, mutation, publication)
+  
+  if (errors.length > 0) return handleErrors(errors)
+  
+  return new Response(
+    JSON.stringify({ data: responseData && responseData.publishReservation }),
+    responseInit
+  )
 }
+
+function prepareMutation () {
+  return gql`
+  mutation createReservation($author: String!, $dateStart: Date!, $dateEnd: Date!, $timeStart: DateTime!, $timeEnd: DateTime!, $smartzoneId: ID!) {
+    createReservation(data: { author: $author, dateStart: $dateStart, dateEnd: $dateEnd, timeStart: $timeStart, timeEnd: $timeEnd, smartzone: { connect: { id: $smartzoneId } } }) {
+      id
+    }
+  }
+  `
+}
+
+function preparePublication () {
+  return gql`
+  mutation publishReservation($id: ID!) {
+    publishReservation(where: { id: $id }, to: PUBLISHED) {
+      id
+    }
+  }`
+}
+
+async function insertReservation (requestData, mutation, publication) {
+  const data = await hygraph
+    .request(mutation, { ...requestData })
+    .then((data) => {
+      return (
+        hygraph
+          .request(publication, { id: data.createReservation.id ?? null })
+          .catch((error) => {
+            errors.push({ field: 'HyGraph', message: error })
+          })
+      )
+    })
+    .catch((error) => {
+      errors.push({ field: 'HyGraph', message: error })
+    })
+
+    return data
+}
+
+
