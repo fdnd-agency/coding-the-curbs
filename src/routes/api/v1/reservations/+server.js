@@ -99,5 +99,3 @@ async function insertReservation (requestData, mutation, publication) {
 
     return data
 }
-
-

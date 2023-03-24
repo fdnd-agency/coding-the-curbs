@@ -7,9 +7,9 @@ export async function GET({ url }) {
   const skip = Number(url.searchParams.get('skip') ?? 0)
   const direction = url.searchParams.get('direction') === 'ASC' ? 'ASC' : 'DESC'
   const orderBy = (url.searchParams.get('orderBy') ?? 'publishedAt') + '_' + direction
-
   const query = queryGetSmartzones()
   const data = await hygraphOnSteroids.request(query, { first, skip, orderBy })
+  
   return new Response(JSON.stringify(data), responseInit)
 }
 
