@@ -64,7 +64,7 @@ export async function POST({ request }) {
 
 function prepareMutation () {
   return gql`
-  mutation createReservation($author: String!, $dateStart: Date!, $dateEnd: Date!, $timeStart: Date!, $timeEnd: Date!, $smartzoneId: ID!) {
+  mutation createReservation($author: String!, $dateStart: Date!, $dateEnd: Date!, $timeStart: DateTime!, $timeEnd: DateTime!, $smartzoneId: ID!) {
     createReservation(data: { author: $author, dateStart: $dateStart, dateEnd: $dateEnd, timeStart: $timeStart, timeEnd: $timeEnd, smartzone: { connect: { id: $smartzoneId } } }) {
       id
     }
