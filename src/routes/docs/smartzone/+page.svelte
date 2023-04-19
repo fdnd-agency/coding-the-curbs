@@ -19,8 +19,8 @@
 
 <ul>
 	<li>
-		<a href="/api/v1/smartzone?id=123"
-			>/api/v1/smartzone?id=123</a
+		<a href="/api/v1/smartzone?id=clene4gw60aqg0bunwwpawr1p"
+			>/api/v1/smartzone?id=clene4gw60aqg0bunwwpawr1p</a
 		>
 	</li>
 </ul>
@@ -36,7 +36,7 @@
 
 <ul>
 	<li>
-		<a href="/api/v1/smartzone/[slug]">/api/v1/smartzone/[slug]</a>
+		    <a href="/api/v1/smartzone/tijn">/api/v1/smartzones</a>
 	</li>
 </ul>
 
@@ -44,7 +44,7 @@
 <h4>Voorbeeld requests:</h4>
 <ul>
   <li>
-    <a href="/api/v1/smartzones">/api/v1/smartzones</a>
+    <a href="/api/v1/smartzones/">/api/v1/smartzones</a>
   </li>
 </ul>
 

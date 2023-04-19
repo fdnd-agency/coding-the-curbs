@@ -1,7 +1,8 @@
-import { gql } from 'graphql-request'
+import { handleErrors, validateField } from '$lib/helpers/errorHandling'
 import { hygraph, hygraphOnSteroids } from '$lib/server/hygraph'
+
+import { gql } from 'graphql-request'
 import { responseInit } from '$lib/server/responseInit'
-import { validateField, handleErrors } from '$lib/helpers/errorHandling'
 
 // todo: save errors in store
 const errors = []
@@ -11,11 +12,11 @@ export async function GET({ url }) {
   const id = url.searchParams.get('id') ?? ''
   const query = reservationsQuery()
   const data = await hygraphOnSteroids.request(query, { id })
-  
+
   return new Response(JSON.stringify(data), responseInit)
 }
 
-function reservationsQuery () {
+function reservationsQuery() {
   return gql`
     query getReservations($id: ID!) {
       reservations(where: { smartzone: { id: $id } }) {
@@ -45,57 +46,69 @@ export async function POST({ request }) {
     { name: 'dateEnd', type: 'string' },
     { name: 'timeStart', type: 'string' },
     { name: 'timeEnd', type: 'string' },
-    { name: 'smartzoneId', type: 'string' }
+    { name: 'smartzoneId', type: 'string' },
   ]
-  
-  fields.forEach(field => { validateField(requestData, field.name, field.type, errors) })
+
+  fields.forEach((field) => {
+    validateField(requestData, field.name, field.type, errors)
+  })
 
   if (errors.length > 0) return handleErrors(errors)
 
   const responseData = await insertReservation(requestData, mutation, publication)
-  
+
   if (errors.length > 0) return handleErrors(errors)
-  
-  return new Response(
-    JSON.stringify({ data: responseData && responseData.publishReservation }),
-    responseInit
-  )
+
+  return new Response(JSON.stringify({ data: responseData && responseData.publishReservation }), responseInit)
 }
 
-function prepareMutation () {
+function prepareMutation() {
   return gql`
-  mutation createReservation($author: String!, $dateStart: Date!, $dateEnd: Date!, $timeStart: DateTime!, $timeEnd: DateTime!, $smartzoneId: ID!) {
-    createReservation(data: { author: $author, dateStart: $dateStart, dateEnd: $dateEnd, timeStart: $timeStart, timeEnd: $timeEnd, smartzone: { connect: { id: $smartzoneId } } }) {
-      id
+    mutation createReservation(
+      $author: String!
+      $dateStart: Date!
+      $dateEnd: Date!
+      $timeStart: DateTime!
+      $timeEnd: DateTime!
+      $smartzoneId: ID!
+    ) {
+      createReservation(
+        data: {
+          author: $author
+          dateStart: $dateStart
+          dateEnd: $dateEnd
+          timeStart: $timeStart
+          timeEnd: $timeEnd
+          smartzone: { connect: { id: $smartzoneId } }
+        }
+      ) {
+        id
+      }
     }
-  }
   `
 }
 
-function preparePublication () {
+function preparePublication() {
   return gql`
-  mutation publishReservation($id: ID!) {
-    publishReservation(where: { id: $id }, to: PUBLISHED) {
-      id
+    mutation publishReservation($id: ID!) {
+      publishReservation(where: { id: $id }, to: PUBLISHED) {
+        id
+      }
     }
-  }`
+  `
 }
 
-async function insertReservation (requestData, mutation, publication) {
+async function insertReservation(requestData, mutation, publication) {
   const data = await hygraph
     .request(mutation, { ...requestData })
     .then((data) => {
-      return (
-        hygraph
-          .request(publication, { id: data.createReservation.id ?? null })
-          .catch((error) => {
-            errors.push({ field: 'HyGraph', message: error })
-          })
-      )
+      return hygraph.request(publication, { id: data.createReservation.id ?? null }).catch((error) => {
+        errors.push({ field: 'HyGraph', message: error })
+      })
     })
     .catch((error) => {
       errors.push({ field: 'HyGraph', message: error })
     })
 
-    return data
+  return data
 }
