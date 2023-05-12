@@ -7,16 +7,23 @@ export async function GET({ url }) {
   const skip = Number(url.searchParams.get('skip') ?? 0)
   const direction = url.searchParams.get('direction') === 'ASC' ? 'ASC' : 'DESC'
   const orderBy = (url.searchParams.get('orderBy') ?? 'publishedAt') + '_' + direction
-  const query = queryGetSmartzones()
-  const data = await hygraphOnSteroids.request(query, { first, skip, orderBy })
 
-  return new Response(JSON.stringify(data), responseInit)
-}
+  // Smerigheid ahead! :) DO NOT DO THIS LIKE THIS
+  let where = '{'
+  if (url.searchParams.get('town')) {
+    where += 'town:"' + url.searchParams.get('town') + '"'
+  }
+  if (url.searchParams.get('size')) {
+    if (where != '{') {
+      where += ','
+    }
+    where += 'size:' + Number(url.searchParams.get('size'))
+  }
+  where += '}'
 
-function queryGetSmartzones() {
-  return gql`
+  const query = gql`
     query getSmartzones($first: Int, $skip: Int, $orderBy: SmartzoneOrderByInput) {
-      smartzones(first: $first, skip: $skip, orderBy: $orderBy) {
+      smartzones(first: $first, skip: $skip, orderBy: $orderBy, where: ${where}) {
         id
         slug
         name
@@ -61,4 +68,7 @@ function queryGetSmartzones() {
       }
     }
   `
+  const data = await hygraphOnSteroids.request(query, { first, skip, orderBy })
+
+  return new Response(JSON.stringify(data), responseInit)
 }
