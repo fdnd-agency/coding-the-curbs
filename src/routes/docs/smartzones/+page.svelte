@@ -45,6 +45,15 @@
 		<a href="/api/v1/smartzones?town=Amsterdam">/api/v1/smartzones?town=Amsterdam</a> selecteer alles met <em>town=Amsterdam</em>.
 	</li>
 	<li>
+		<a href="/api/v1/smartzones?country=NL">/api/v1/smartzones?country=NL</a> selecteer alles met <em>country=NL</em>.
+	</li>
+	<li>
+		<a href="/api/v1/smartzones?utilization=meetingpoint">/api/v1/smartzones?utilization=meetingpoint</a> selecteer alles met <em>utilization=meetingpoint</em>.
+	</li>
+	<li>
+		<a href="/api/v1/smartzones?utilization=meetingpoint,parking">/api/v1/smartzones?utilization=meetingpoint,parking</a> selecteer alles met <em>utilization=meetingpoint,parking</em>.
+	</li>
+	<li>
 		<a href="/api/v1/smartzones?first=20&skip=20">/api/v1/smartzones?first=20&skip=20</a>, selecteer 20
 		<em>smartzones</em> en sla de eerste 20 over. Met andere woorden, selecteer pagina 2.
 	</li>

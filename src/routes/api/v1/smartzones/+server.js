@@ -19,6 +19,12 @@ export async function GET({ url }) {
     }
     where += 'size:' + Number(url.searchParams.get('size'))
   }
+  if (url.searchParams.get('utilization')) {
+    if (where != '{') {
+      where += ','
+    }
+    where += 'utilization_contains_some:[' + url.searchParams.get('utilization') + ']'
+  }
   where += '}'
 
   const query = gql`
